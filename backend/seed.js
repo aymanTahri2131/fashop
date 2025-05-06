@@ -57,15 +57,3 @@ const mockProducts = [
   },
   // ➕ Ajoute les autres produits ici
 ]
-
-mongoose.connect("mongodb+srv://tayman1801:REocnQuOCHdJJmCg@cluster0.nloicml.mongodb.net/")
-  .then(async () => {
-    await Product.deleteMany({})
-    await Product.insertMany(mockProducts)
-    console.log("✅ Produits importés avec succès")
-    process.exit()
-  })
-  .catch((err) => {
-    console.error("❌ Erreur d'import :", err)
-    process.exit(1)
-  })
