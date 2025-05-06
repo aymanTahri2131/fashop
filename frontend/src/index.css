@@ -1,0 +1,169 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Custom FlorArt colors */
+    --color-primary: #bc6c39;
+    /* terracotta */
+    --color-secondary: #F0E4CF;
+    /* beige sable */
+    --color-accent: #8f974a;
+    /* vert olive */
+    --color-text: #212121;
+    /* dark gray */
+    --color-background: #f5f5f0;
+    /* light cream */
+
+    /* shadcn/ui required variables */
+    --background: #f5f5f0;
+    /* light cream */
+    --foreground: #212121;
+    /* dark gray */
+
+    --card: #ffffff;
+    --card-foreground: #212121;
+    /* dark gray */
+
+    --popover: #ffffff;
+    --popover-foreground: #212121;
+    /* dark gray */
+
+    --primary: #bc6c39;
+    /* terracotta */
+    --primary-foreground: #ffffff;
+    /* white */
+
+    --secondary: #e9d5be;
+    /* beige sable */
+    --secondary-foreground: #bc6c39;
+    /* terracotta */
+
+    --muted: #f5f5f0;
+    /* light cream, slightly darker */
+    --muted-foreground: #6f3429;
+    /* muted text */
+
+    --accent: #8f974a;
+    /* vert olive */
+    --accent-foreground: #ffffff;
+    /* white */
+
+    --destructive: #e0004d;
+    --destructive-foreground: #ffffff;
+
+    --border: #e9d5be;
+    /* beige sable, slightly darker */
+    --input: #e9d5be;
+    /* beige sable, slightly darker */
+    --ring: #bc6c39;
+    /* terracotta */
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 33 33 33;
+    /* dark gray */
+    --foreground: 245 245 240;
+    /* light cream */
+
+    --card: 33 33 33;
+    /* dark gray */
+    --card-foreground: 245 245 240;
+    /* light cream */
+
+    --popover: 33 33 33;
+    /* dark gray */
+    --popover-foreground: 245 245 240;
+    /* light cream */
+
+    --primary: 188 108 57;
+    /* terracotta */
+    --primary-foreground: 0 0% 100%;
+    /* white */
+
+    --secondary: 233 213 190;
+    /* beige sable */
+    --secondary-foreground: 188 108 57;
+    /* terracotta */
+
+    --muted: 50 50 50;
+    /* darker gray */
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 143 151 74;
+    /* vert olive */
+    --accent-foreground: 0 0% 100%;
+    /* white */
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 60 60 60;
+    /* darker gray for borders */
+    --input: 60 60 60;
+    /* darker gray for inputs */
+    --ring: 188 108 57;
+    /* terracotta */
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: "Dosis", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+
+  }
+
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Dosis", sans-serif !important;
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  .cust-card {
+    margin-top: 0px !important;
+  }
+  
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-2 rounded-md hover:bg-primary/90 transition-colors duration-300;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-primary px-6 py-2 rounded-md hover:bg-secondary/90 transition-colors duration-300;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-white px-6 py-2 rounded-md hover:bg-accent/90 transition-colors duration-300;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-playfair font-semibold text-primary mb-8 text-center;
+  }
+
+  .product-card {
+    @apply bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+}
+
+
