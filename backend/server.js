@@ -27,7 +27,7 @@ app.use(cors())
 
 app.use(express.json());
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'https://florart.netlify.app/'];
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
