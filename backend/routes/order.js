@@ -5,12 +5,14 @@ import {
   createOrder,
   updateOrderStatus,
   deleteOrder,
+  getOrdersByUser,
 } from "../controllers/orderController.js";
 
 const router = express.Router();
 
 // GET all orders
 router.get("/", getOrders);
+router.get("/user", getOrdersByUser);
 
 // GET a single order by ID
 router.get("/:id", getOrderById);

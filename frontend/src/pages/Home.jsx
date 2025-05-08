@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { fetchNewArrivals, fetchBestSellers } from "../api/api";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline"
 import { Link } from "react-router-dom"
+import { MdOutlineRemoveRedEye } from "react-icons/md";
 
 const translations = {
   fr: {
@@ -33,7 +34,7 @@ const categories = [
   {
     key: "vases",
     name: { fr: "Vases", en: "Vases" },
-    image: "https://res.cloudinary.com/doq0mdnkz/image/upload/v1745457048/vase_jolwbo.png",
+    image: "https://res.cloudinary.com/doq0mdnkz/image/upload/v1746479221/f0rnyaeio9gfmfoqhax3.png",
   },
   {
     key: "cups",
@@ -43,12 +44,12 @@ const categories = [
   {
     key: "wall-decoration",
     name: { fr: "Décoration murale", en: "Wall decoration" },
-    image: "https://res.cloudinary.com/doq0mdnkz/image/upload/v1745458370/Pngtree_a_round_red_decorative_plate_20759669_oidjqm.png",
+    image: "https://res.cloudinary.com/doq0mdnkz/image/upload/v1746479614/a8js68pkkcigb7oerg4o.png",
   },
   {
     key: "unique-pieces",
     name: { fr: "Pièces uniques", en: "Unique pieces" },
-    image: "https://res.cloudinary.com/doq0mdnkz/image/upload/v1745462698/Pngtree_pottery_wheel_pottery_workshop_14993938_sfolk4.png",
+    image: "https://res.cloudinary.com/doq0mdnkz/image/upload/v1746479743/txmptuwvfwgxq8ayf0st.png",
   },
 ]
 
@@ -182,21 +183,21 @@ function Home({ language }) {
           <h2 className="section-title text-[#bc6c39]">{t.discoverTitle}</h2>
           <p className="text-center text-lg max-w-2xl mx-auto mb-12 text-[#bc6c39]">{t.discoverDesc}</p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-              {categories.map((cat) => (
-                <Link to={`/shop?category=${cat.key.toLowerCase().replace(/\s+/g, "-")}`} key={cat.key} className="w-full bg-transparent rounded-lg m-2 flex flex-col justify-center items-center">
-                  <div className="mb-5 ">
-                    <img
-                      src={cat.image || "/placeholder.svg"}
-                      alt={cat.name[language]}
-                      className="object-center object-cover transition-transform duration-500 bg-[#F0E4CF] rounded-full h-48 w-48 hover:scale-105"
-                    />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg font-medium text-[#bc6c39] mb-2">{cat.name[language]}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            {categories.map((cat) => (
+              <Link to={`/shop?category=${cat.key.toLowerCase().replace(/\s+/g, "-")}`} key={cat.key} className="w-full h-full bg-transparent rounded-lg m-2 flex flex-col justify-center items-center">
+                <div className="mb-5 ">
+                  <img
+                    src={cat.image || "/placeholder.svg"}
+                    alt={cat.name[language]}
+                    className="object-center object-cover transition-transform duration-500 bg-[#F0E4CF] rounded-full h-full w-full max-h-48 max-w-48 hover:scale-105"
+                  />
+                </div>
+                <div className="text-center">
+                  <p className="text-lg font-medium text-[#bc6c39] mb-2">{cat.name[language]}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
 
         </div>
       </section>
@@ -216,17 +217,21 @@ function Home({ language }) {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {newArrivals.map((product) => (
                 <Link to={`/shop/${product._id}`} key={product._id} className="product-card">
-                  <div className="aspect-square overflow-hidden">
+                  <div className="aspect-square overflow-hidden bg-gray-300 relative group">
                     <img
                       src={product.images[0] || "/placeholder.svg"}
                       alt={product.name[language]}
-                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <h3 className="text-white text-sm px-4 text-center">
+                        <MdOutlineRemoveRedEye size={48} />
+                      </h3>
+                    </div>
                   </div>
                   <div className="p-4">
-                    <p className="text-md font-medium text-[#bc6c39] mb-1">{product.categoryId?.[language]}</p>
-                    <h4 className="text-sm mb-2 text-black">{product.name[language]}</h4>
-                    <p className="font-semibold text-black">{formatPrice(product.price.mad)}</p>
+                    <h4 className="text-lg  mb-2 text-black text-center sm:text-center md:text-left">{product.name[language]}</h4>
+                    <p className="font-medium text-black text-center sm:text-center md:text-left">{formatPrice(product.price.mad)}</p>
                   </div>
                 </Link>
               ))}
@@ -250,17 +255,25 @@ function Home({ language }) {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {bestSellers.map((product) => (
                 <Link to={`/shop/${product._id}`} key={product._id} className="product-card">
-                  <div className="aspect-square overflow-hidden">
+                  <div className="aspect-square overflow-hidden bg-gray-300 relative group">
                     <img
                       src={product.images[0] || "/placeholder.svg"}
                       alt={product.name[language]}
-                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <h3 className="text-white text-sm px-4 text-center">
+                        <MdOutlineRemoveRedEye size={48} />
+                      </h3>
+                    </div>
                   </div>
                   <div className="p-4">
-                    <p className="text-sm text-accent mb-1">{product.categoryId?.[language]}</p>
-                    <h4 className="font-medium mb-2">{product.name[language]}</h4>
-                    <p className="font-semibold text-primary">{formatPrice(product.price.mad)}</p>
+                    <h4 className="font-semibold text-lg mb-2 text-center sm:text-center md:text-left">
+                      {product.name[language]}
+                    </h4>
+                    <p className="font-medium text-black text-center sm:text-center md:text-left">
+                      {formatPrice(product.price.mad)}
+                    </p>
                   </div>
                 </Link>
               ))}

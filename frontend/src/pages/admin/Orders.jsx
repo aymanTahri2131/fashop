@@ -122,48 +122,48 @@ function Orders() {
         {/* Orders Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-          {isLoading ? (
+            {isLoading ? (
               <p className="text-center text-gray-500 py-4">Chargement des commandes...</p>
             ) : (
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[#F0E4CF] text-left">
-                  <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Order ID</th>
-                  <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Customer</th>
-                  <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Total</th>
-                  <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredOrders.map((order) => (
-                  <tr key={order._id}>
-                    <td className="px-6 py-4 whitespace-nowrap">{order._id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{order.customer}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{order.date}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{formatPrice(order.total)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(order.status)}`}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="flex items-center justify-center px-6 py-4 whitespace-nowrap">
-                      <button onClick={() => viewOrderDetails(order)} className=" hover:text-[#B9703E] transition-colors duration-300">
-                        < MdOutlineRemoveRedEye size={20} />
-                      </button>
-                    </td>
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-[#F0E4CF] text-left">
+                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Order ID</th>
+                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Customer</th>
+                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Total</th>
+                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider">Actions</th>
                   </tr>
-                ))}
-                {filteredOrders.length === 0 && (
-                  <tr>
-                    <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
-                      No orders found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredOrders.map((order) => (
+                    <tr key={order._id}>
+                      <td className="px-6 py-4 whitespace-nowrap">{order._id}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{order.customer}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{order.date}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{formatPrice(order.total)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(order.status)}`}>
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="flex items-center justify-center px-6 py-4 whitespace-nowrap">
+                        <button onClick={() => viewOrderDetails(order)} className=" hover:text-[#B9703E] transition-colors duration-300">
+                          < MdOutlineRemoveRedEye size={20} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredOrders.length === 0 && (
+                    <tr>
+                      <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                        No orders found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             )}
           </div>
         </div>
@@ -172,7 +172,7 @@ function Orders() {
       {/* Order Details Modal */}
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#F0E4CF] rounded-lg w-full max-w-3xl p-6 max-h-[90vh] overflow-y-auto m-8 sm:m-8 lg:m-auto">
+          <div className="bg-[#F0E4CF] rounded-lg w-full max-w-3xl p-6 max-h-[90vh] overflow-y-auto overflow-x-hidden m-8 sm:m-8 lg:m-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl text-[#B9703E] font-semibold">Order Details : {selectedOrder._id}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-[#B9703E]">
@@ -218,7 +218,7 @@ function Orders() {
 
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-2">Order Items</h3>
-              <div className="border rounded-md overflow-hidden">
+              <div className="border rounded-md overflow-x-auto">
                 <table className="w-full bg-white">
                   <thead>
                     <tr className="bg-[#B9703E]/70 text-left">
@@ -254,30 +254,34 @@ function Orders() {
               <div className="mb-4">
                 <h3 className="text-lg font-semibold mb-4">Update Status</h3>
                 <div className="flex space-x-2">
-                  <button
-                    onClick={() => updateOrderStatus(selectedOrder._id, "processing")}
-                    className={`px-3 py-1 text-xs rounded-md ${selectedOrder.status === "processing" ? "bg-blue-100 text-blue-800" : "bg-gray-100 hover:bg-blue-50"}`}
-                  >
-                    Processing
-                  </button>
-                  <button
-                    onClick={() => updateOrderStatus(selectedOrder._id, "shipped")}
-                    className={`px-3 py-1 text-xs rounded-md ${selectedOrder.status === "shipped" ? "bg-purple-100 text-purple-800" : "bg-gray-100 hover:bg-purple-50"}`}
-                  >
-                    Shipped
-                  </button>
-                  <button
-                    onClick={() => updateOrderStatus(selectedOrder._id, "completed")}
-                    className={`px-3 py-1 text-xs rounded-md ${selectedOrder.status === "completed" ? "bg-green-100 text-green-800" : "bg-gray-100 hover:bg-green-50"}`}
-                  >
-                    Completed
-                  </button>
-                  <button
-                    onClick={() => updateOrderStatus(selectedOrder._id, "cancelled")}
-                    className={`px-3 py-1 text-xs rounded-md ${selectedOrder.status === "cancelled" ? "bg-red-100 text-red-800" : "bg-gray-100 hover:bg-red-50"}`}
-                  >
-                    Cancelled
-                  </button>
+                  <div>
+                    <button
+                      onClick={() => updateOrderStatus(selectedOrder._id, "processing")}
+                      className={`px-3 py-1 text-xs rounded-md mr-0 sm:mr-0 md:mr-2 mb-2 sm:mb-2 md:mb-0 ${selectedOrder.status === "processing" ? "bg-blue-100 text-blue-800" : "bg-gray-100 hover:bg-blue-50"}`}
+                    >
+                      Processing
+                    </button>
+                    <button
+                      onClick={() => updateOrderStatus(selectedOrder._id, "shipped")}
+                      className={`px-3 py-1 text-xs rounded-md ${selectedOrder.status === "shipped" ? "bg-purple-100 text-purple-800" : "bg-gray-100 hover:bg-purple-50"}`}
+                    >
+                      Shipped
+                    </button>
+                  </div>
+                  <div>
+                    <button
+                      onClick={() => updateOrderStatus(selectedOrder._id, "completed")}
+                      className={`px-3 py-1 text-xs rounded-md mr-0 sm:mr-0 md:mr-2 mb-2 sm:mb-2 md:mb-0 ${selectedOrder.status === "completed" ? "bg-green-100 text-green-800" : "bg-gray-100 hover:bg-green-50"}`}
+                    >
+                      Completed
+                    </button>
+                    <button
+                      onClick={() => updateOrderStatus(selectedOrder._id, "cancelled")}
+                      className={`px-3 py-1 text-xs rounded-md ${selectedOrder.status === "cancelled" ? "bg-red-100 text-red-800" : "bg-gray-100 hover:bg-red-50"}`}
+                    >
+                      Cancelled
+                    </button>
+                  </div>
                 </div>
               </div>
               <button

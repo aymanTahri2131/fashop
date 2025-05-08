@@ -146,6 +146,7 @@ function Checkout({ cart, clearCart, language, user }) {
     setIsSubmitting(true);
   
     const orderData = {
+      userId: user?._id || null, // ID de l'utilisateur connecté
       customer: `${formData.firstName} ${formData.lastName}`,
       email: formData.email,
       phone: formData.phone,
@@ -159,6 +160,7 @@ function Checkout({ cart, clearCart, language, user }) {
       items: cart.map((item) => ({
         name: item.name[language],
         price: item.price,
+        image: item.image,
         quantity: item.quantity,
       })),
       total,

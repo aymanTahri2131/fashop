@@ -212,27 +212,26 @@ function Shop({ language = "fr", addToCart }) {
                       </div>
 
                     </div>
-                    <div className="p-4">
-                      <p className="text-sm text-accent mb-1">{product.categoryId?.[language] || "Unknown Category"}</p>
-                      <h4 className="font-medium mb-2">{product.name[language]}</h4>
-                      <p className="font-semibold text-primary">{formatPrice(product.price)}</p>
+                    <div className="p-4 text-center sm:text-center md:text-left">
+                      <h4 className="font-semibold text-lg  mb-2">{product.name[language]}</h4>
+                      <p className="font-medium ">{formatPrice(product.price)}</p>
                     </div>
                   </Link>
                   <div className="px-4 pb-4">
-                    <div className="flex gap-3 justify-center">
+                    <div className="flex gap-3 justify-center sm:justify-center md:justify-start">
                       <Link
                         to={`/shop/${product._id}`}
                         className="flex gap-2 w-auto items-center px-2 py-1 bg-transparent text-[#8f974a] border border-[#8f974a] rounded-lg hover:text-white hover:border-none hover:bg-[#8f974a] transition-colors duration-300"
                       >
                         <MdOutlineRemoveRedEye />
-                        <span>Voir</span>
+                        <span className="hidden sm:hidden md:inline">Voir</span>
                       </Link>
                       <button
                         onClick={(e) => handleAddToCart(e, product)}
                         className="flex gap-2 w-auto items-center px-2 py-1 bg-transparent text-[#8f974a] border border-[#8f974a] rounded-lg hover:text-white hover:border-none hover:bg-[#8f974a] transition-colors duration-300"
                       >
                         <span><LuShoppingCart /></span>
-                        <span>Ajouter</span>
+                        <span className="hidden sm:hidden md:inline">Ajouter</span>
                       </button>
                     </div>
                   </div>

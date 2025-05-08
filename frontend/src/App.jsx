@@ -8,6 +8,9 @@ import Footer from "./components/layout/Footer"
 import AdminLayout from "./components/admin/AdminLayout"
 import ScrollToTop from "./components/scrollToTop"
 
+import Profile from "./pages/Profile";
+import Orders from "./pages/Orders";
+
 // Pages publiques
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -42,7 +45,7 @@ function App() {
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("user");
     if (!savedUser) return null; // Si aucune donnée n'est trouvée, retourner `null`
-  
+
     const decryptedUser = decryptData(savedUser); // Tenter de déchiffrer les données
     return decryptedUser || null; // Retourner `null` si le déchiffrement échoue
   });
@@ -143,6 +146,8 @@ function App() {
           <Route path="/" element={<Home language={language} />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile user={user} />} />
+          <Route path="/orders" element={<Orders user={user} />} />
           <Route path="/shop" element={<Shop language={language} addToCart={addToCart} />} />
           <Route path="/shop/:id" element={<ProductDetail language={language} addToCart={addToCart} />} />
           <Route path="/about" element={<About language={language} />} />

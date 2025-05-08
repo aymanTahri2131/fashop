@@ -70,6 +70,8 @@ export const fetchCategories = () => api.get("/categories");
 
 // 🔄 GET : Récupérer toutes les commandes
 export const fetchOrders = () => api.get("/orders");
+export const fetchOrdersByUser = (userId) =>
+  api.get(`/orders/user`, { params: { userId } });
 
 // 📝 PUT : Mettre à jour le statut d'une commande
 export const updateOrderStatus = (id, status) =>

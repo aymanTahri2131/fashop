@@ -52,11 +52,11 @@ function Dashboard() {
   return (
     <div className="flex min-h-screen">
 
-      <div className="flex-1 p-2 sm:p-2 md:p-4 lg:p-8 ">
+      <div className="flex-1 w-full p-2 sm:p-2 md:p-4 lg:p-8 ">
         <h1 className="text-2xl font text-[#B9703E] semibold mb-6">Dashboard</h1>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 ">
           <div className="bg-[#F0E4CF] rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className=" text-sm">Total Sales</h3>
@@ -95,7 +95,7 @@ function Dashboard() {
         </div>
 
         {/* Sales Overview */}
-        <div className="bg-[#F0E4CF] rounded-lg shadow-sm p-6 mb-8">
+        <div className="bg-[#F0E4CF] rounded-lg shadow-sm p-6 mb-8 overflow-x-auto w-full">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg text-[#B9703E] font-semibold">Sales Overview</h2>
             <div className="flex space-x-2">
@@ -121,7 +121,7 @@ function Dashboard() {
           </div>
 
           {/* Chart Placeholder */}
-          <div className="h-64 bg-orange-50 rounded-lg flex items-center justify-center">
+          <div className="h-64 bg-orange-50 rounded-lg flex items-center justify-center w-full">
             <div className="flex space-x-4">
               {salesData.map((data, index) => (
                 <div key={index} className="flex flex-col items-center">
@@ -135,7 +135,7 @@ function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Orders */}
-          <div className="bg-[#F0E4CF] rounded-lg shadow-sm p-6">
+          <div className="bg-[#F0E4CF] rounded-lg shadow-sm p-6 overflow-x-auto w-full">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg text-[#B9703E] font-semibold">Recent Orders</h2>
               <Link to="/admin/orders" className="text-white px-2 py-1 rounded-md bg-[#B9703E] text-sm hover:bg-[#8A9A5B] transition-colors duration-200">
@@ -147,21 +147,21 @@ function Dashboard() {
               <table className="w-full">
                 <thead>
                   <tr className="text-left text-xs  border-b">
-                    <th className="pb-2">Order ID</th>
-                    <th className="pb-2">Customer</th>
-                    <th className="pb-2">Date</th>
-                    <th className="pb-2">Amount</th>
-                    <th className="pb-2">Status</th>
+                    <th className="pb-2 px-4">Order ID</th>
+                    <th className="pb-2 px-4">Customer</th>
+                    <th className="pb-2 px-4">Date</th>
+                    <th className="pb-2 px-4">Amount</th>
+                    <th className="pb-2 px-4">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recentOrders.map((order) => (
                     <tr key={order.id} className="border-b last:border-b-0">
-                      <td className="py-3">{order.id}</td>
-                      <td className="py-3">{order.customer}</td>
-                      <td className="py-3">{order.date}</td>
-                      <td className="py-3">{formatPrice(order.total)}</td>
-                      <td className="py-3">
+                      <td className="py-3 px-4">{order.id}</td>
+                      <td className="py-3 px-4">{order.customer}</td>
+                      <td className="py-3 px-4">{order.date}</td>
+                      <td className="py-3 px-4">{formatPrice(order.total)}</td>
+                      <td className="py-3 px-4">
                         <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(order.status)}`}>
                           {order.status}
                         </span>
@@ -174,7 +174,7 @@ function Dashboard() {
           </div>
 
           {/* Low Stock Alert */}
-          <div className="bg-[#F0E4CF] rounded-lg shadow-sm p-6">
+          <div className="bg-[#F0E4CF] rounded-lg shadow-sm p-6 w-full overflow-x-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg text-[#B9703E]  font-semibold">Low Stock Alert</h2>
               <Link to="/admin/products" className="text-white px-2 py-1 rounded-md bg-[#B9703E] text-sm hover:bg-[#8A9A5B] transition-colors duration-200">

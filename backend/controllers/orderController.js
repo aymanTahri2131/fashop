@@ -25,10 +25,34 @@ export const getOrderById = async (req, res) => {
   }
 };
 
+export const getOrdersByUser = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const orders = await Order.find({ userId }).sort({ createdAt: -1 });
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Failed to fetch orders:", error);
+    res.status(500).json({ message: "Failed to fetch orders" });
+  }
+};
+
 // Create a new order
 export const createOrder = async (req, res) => {
   try {
-    const newOrder = new Order(req.body);
+    const { userId, customer, email, total, items, shipping, payment } = req.body;
+
+    console.log("Items received:", items);
+
+    const newOrder = new Order({
+      userId,
+      customer,
+      email,
+      total,
+      items,
+      shipping,
+      payment,
+    });
+    
     const savedOrder = await newOrder.save();
     res.status(201).json(savedOrder);
   } catch (error) {

@@ -158,12 +158,20 @@ function Header({ cartItemsCount, language, toggleLanguage, user, logout }) {
                       </button>
                     </>
                   ) : (
+                    <>
                     <Link
                       to="/login"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#bc6c39] hover:text-white transition-colors duration-200 rounded-md"
                     >
                       Login
                     </Link>
+                    <Link
+                      to="/register"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#bc6c39] hover:text-white transition-colors duration-200 rounded-md"
+                    >
+                      Register
+                    </Link>
+                    </>
                   )}
                 </div>
               )}
