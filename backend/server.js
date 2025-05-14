@@ -10,6 +10,7 @@ import newsletterRoutes from './routes/newsletter.js';
 import categoryRoutes from "./routes/category.js";
 import orderRoutes from "./routes/order.js";
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 
 
@@ -48,6 +49,7 @@ app.use((req, res, next) => {
 
 //api endpoint
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use('/api/custom-orders', customOrdersRoutes);

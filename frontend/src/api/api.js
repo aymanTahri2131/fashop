@@ -1,6 +1,7 @@
 import axios from "axios"
+import { decryptData } from "../encryptData"
 
-const API_BASE_URL = "https://fashop.onrender.com/api"
+const API_BASE_URL = "http://localhost:4000/api"
 
 // ✅ Axios instance
 const api = axios.create({
@@ -18,6 +19,29 @@ export const registerUser = (userData) => api.post("/auth/register", userData);
 
 // ✅ POST : Connexion
 export const loginUser = (credentials) => api.post("/auth/login", credentials);
+
+export const fetchUsers = () => api.get("/auth/users");
+
+export const updateUser = (userData) => {
+  const encryptedUser = localStorage.getItem("user"); // Retrieve the encrypted user data
+  if (!encryptedUser) {
+    throw new Error("No user data found. Please log in again.");
+  }
+
+  const user = decryptData(encryptedUser); // Decrypt the user data
+  if (!user || !user.token) {
+    throw new Error("Invalid user data. Please log in again.");
+  }
+
+  const token = user.token; // Extract the token from the decrypted user data
+  console.log("Token for update:", token); // Debugging log
+
+  return api.put("/users/profile", userData, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
 
 /* -------------------- PRODUITS -------------------- */
 

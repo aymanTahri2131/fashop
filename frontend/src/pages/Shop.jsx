@@ -1,103 +1,108 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import { toast } from "react-toastify"
-import { fetchProducts } from "../api/api"
-import { useLocation } from "react-router-dom"
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import { fetchProducts } from "../api/api";
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
-import { translations, categoryOptions } from '../data/data';
+import { translations, categoryOptions } from "../data/data";
 
+function Shop({ language, currency, addToCart, priceRange, setPriceRange, isEuro }) {
+  const t = translations[language];
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortOption, setSortOption] = useState("newest");
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
+  const location = useLocation();
 
-// Traductions
-
-
-const cartButtons = [
-  { id: 1, icon: <MdOutlineRemoveRedEye />, name: { fr: "Voir", en: "More" } },
-  { id: 2, icon: <LuShoppingCart />, name: { fr: "Ajouter", en: "Add" } },
-]
-
-
-function Shop({ language = "fr", addToCart }) {
-  const t = translations[language]
-  const [products, setProducts] = useState([])
-  const [filteredProducts, setFilteredProducts] = useState([])
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [priceRange, setPriceRange] = useState([0, 2000])
-  const [sortOption, setSortOption] = useState("newest")
-  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
-
-  const location = useLocation()
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    const catFromURL = params.get("category")
-
-    if (catFromURL) {
-      setSelectedCategory(catFromURL)
-      window.scrollTo({ top: 0, behavior: "smooth" })
-    }
-  }, [location])
-
+  // Fetch products on mount
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const res = await fetchProducts()
-        setProducts(res.data)
-        setFilteredProducts(res.data)
+        const res = await fetchProducts();
+        setProducts(res.data);
+        setFilteredProducts(res.data);
       } catch (error) {
-        console.error("Erreur lors du chargement des produits :", error)
+        console.error("Erreur lors du chargement des produits :", error);
+        toast.error("Impossible de charger les produits. Veuillez réessayer.");
       }
-    }
+    };
 
-    loadProducts()
-  }, [])
+    loadProducts();
+  }, []);
 
+  // Handle category from URL
   useEffect(() => {
-    let filtered = [...products]
+    const params = new URLSearchParams(location.search);
+    const catFromURL = params.get("category");
 
+    if (catFromURL) {
+      setSelectedCategory(catFromURL);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [location]);
+
+  // Filter and sort products
+  useEffect(() => {
+    let filtered = [...products];
+
+    // Filter by category
     if (selectedCategory !== "all") {
       filtered = filtered.filter(
         (product) => product.categoryId?.key === selectedCategory
-      )
+      );
     }
 
+    // Filter by price range
     filtered = filtered.filter(
-      (product) => product.price.mad >= priceRange[0] && product.price.mad <= priceRange[1]
-    )
+      (product) =>
+        product.price?.[currency] >= priceRange[0] &&
+        product.price?.[currency] <= priceRange[1]
+    );
 
+    // Sort products
     switch (sortOption) {
       case "priceAsc":
-        filtered.sort((a, b) => a.price.mad - b.price.mad)
-        break
+        filtered.sort((a, b) => a.price?.[currency] - b.price?.[currency]);
+        break;
       case "priceDesc":
-        filtered.sort((a, b) => b.price.mad - a.price.mad)
-        break
+        filtered.sort((a, b) => b.price?.[currency] - a.price?.[currency]);
+        break;
       case "newest":
       default:
-        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        break
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
     }
 
-    setFilteredProducts(filtered)
-  }, [products, selectedCategory, priceRange, sortOption])
+    setFilteredProducts(filtered);
+  }, [products, selectedCategory, priceRange, sortOption, currency]);
 
-  const formatPrice = (priceObj) => `${priceObj.mad} MAD`
+  // Format price
+  const formatPrice = (price) => {
+    if (isEuro) {
+      return `${price} ${currency === "mad" ? "MAD" : "€"}`;
+    } else {
+      return `${price} ${currency === "mad" ? "MAD" : "$"}`;
+    }
+  };
 
+  // Handle add to cart
   const handleAddToCart = (e, product) => {
-    e.preventDefault()
-    e.stopPropagation()
-    addToCart(product, 1)
-    toast.success(t.added)
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product, 1);
+    toast.success(t.added);
+  };
 
+  // Reset filters
   const resetFilters = () => {
-    setSelectedCategory("all")
-    setPriceRange([0, 2000])
-    setSortOption("newest")
-  }
+    setSelectedCategory("all");
+    setPriceRange([0, currency === "mad" ? 2000 : 200]);
+    setSortOption("newest");
+  };
 
   return (
     <div className="py-12 bg-[#F0E4CF]/30">
@@ -143,20 +148,25 @@ function Shop({ language = "fr", addToCart }) {
                 ))}
               </div>
 
-
               {/* Price Filter */}
               <div className="mb-8">
                 <h3 className="text-lg font-semibold mb-4">{t.price}</h3>
-                <p className="mb-2">
-                  {t.priceRange}: {priceRange[0]} - {priceRange[1]} MAD
-                </p>
+                {isEuro ? (
+                  <p className="mb-2">
+                    {t.priceRange}: {priceRange[0]} - {priceRange[1]} {currency === "mad" ? "MAD" : "€"}
+                  </p>
+                ) : (
+                  <p className="mb-2">
+                    {t.priceRange}: {priceRange[0]} - {priceRange[1]} {currency === "mad" ? "MAD" : "$"}
+                  </p>
+                )}
                 <input
                   type="range"
                   min="0"
-                  max="2000"
-                  step="200"
+                  max={currency === "mad" ? 2000 : 200}
+                  step={currency === "mad" ? 200 : 20}
                   value={priceRange[1]}
-                  onChange={(e) => setPriceRange([priceRange[0], Number.parseInt(e.target.value)])}
+                  onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
                   className="w-full accent-[#8f974a]"
                 />
               </div>
@@ -174,17 +184,17 @@ function Shop({ language = "fr", addToCart }) {
                     <option value="priceAsc">{t.priceAsc}</option>
                     <option value="priceDesc">{t.priceDesc}</option>
                   </select>
-                  <button onClick={resetFilters} className="w-full p-2 rounded-md bg-[#8f974a] text-white text-sm">Reset</button>
+                  <button onClick={resetFilters} className="w-full p-2 rounded-md bg-[#8f974a] text-white text-sm">
+                    Reset
+                  </button>
                 </div>
-
-
               </div>
             </div>
           </div>
 
           {/* Product Grid */}
           <div className="lg:w-3/4">
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 lg:gap-8 ">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
               {filteredProducts.map((product) => (
                 <div key={product._id} className="product-card group">
                   <Link to={`/shop/${product._id}`} className="block">
@@ -197,24 +207,21 @@ function Shop({ language = "fr", addToCart }) {
                       <div className="absolute top-2 right-2">
                         <div className="flex gap-2">
                           {product.isNewArrival && (
-                            <span className=" bg-[#8f974a] text-white text-xs px-2 py-1 rounded">
+                            <span className="bg-[#8f974a] text-white text-xs px-2 py-1 rounded">
                               NEW
                             </span>
                           )}
-
                           {product.isBestSeller && (
                             <span className="bg-[#bc6c39] text-white text-xs px-2 py-1 rounded">
                               BEST
                             </span>
                           )}
-
                         </div>
                       </div>
-
                     </div>
                     <div className="p-4 text-center sm:text-center md:text-left">
-                      <h4 className="font-semibold text-lg  mb-2">{product.name[language]}</h4>
-                      <p className="font-medium ">{formatPrice(product.price)}</p>
+                      <h4 className="font-semibold text-lg mb-2">{product.name[language]}</h4>
+                      <p className="font-medium">{formatPrice(product.price[currency])}</p>
                     </div>
                   </Link>
                   <div className="px-4 pb-4">
@@ -224,14 +231,16 @@ function Shop({ language = "fr", addToCart }) {
                         className="flex gap-2 w-auto items-center px-2 py-1 bg-transparent text-[#8f974a] border border-[#8f974a] rounded-lg hover:text-white hover:border-none hover:bg-[#8f974a] transition-colors duration-300"
                       >
                         <MdOutlineRemoveRedEye />
-                        <span className="hidden sm:hidden md:inline">Voir</span>
+                        <span className="hidden sm:hidden md:inline">{t.more}</span>
                       </Link>
                       <button
                         onClick={(e) => handleAddToCart(e, product)}
                         className="flex gap-2 w-auto items-center px-2 py-1 bg-transparent text-[#8f974a] border border-[#8f974a] rounded-lg hover:text-white hover:border-none hover:bg-[#8f974a] transition-colors duration-300"
                       >
-                        <span><LuShoppingCart /></span>
-                        <span className="hidden sm:hidden md:inline">Ajouter</span>
+                        <span>
+                          <LuShoppingCart />
+                        </span>
+                        <span className="hidden sm:hidden md:inline">{t.add}</span>
                       </button>
                     </div>
                   </div>
@@ -241,14 +250,14 @@ function Shop({ language = "fr", addToCart }) {
 
             {filteredProducts.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-lg text-gray-500">Aucun produit ne correspond à vos critères.</p>
+                <p className="text-lg text-gray-500">{t.noProducts}</p>
               </div>
             )}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Shop
+export default Shop;

@@ -1,8 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import React, { useEffect, useState } from "react"
 import AdminSidebar from "../../components/admin/AdminSidebar"
 import { MdOutlineRemoveRedEye } from "react-icons/md";
+import { fetchUsers } from "../../api/api";
+import { toast } from "react-toastify"
 
 // Mock data for customers
 const initialCustomers = [
@@ -89,32 +91,46 @@ const initialCustomers = [
 ]
 
 function Customers() {
-  const [customers, setCustomers] = useState(initialCustomers)
+  const [customers, setCustomers] = useState([])
   const [searchQuery, setSearchQuery] = useState("")
   const [sortField, setSortField] = useState("name")
   const [sortDirection, setSortDirection] = useState("asc")
   const [selectedCustomer, setSelectedCustomer] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const response = await fetchUsers();
+        if (response.data && response.data.length > 0) {
+          setCustomers(response.data);
+        } else {
+          toast.info("No customers found.");
+        }
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+        toast.error("Failed to fetch customers. Please try again.");
+      }
+    };
+  
+    fetchCustomers();
+  }, []);
+
   // Filter customers
   const filteredCustomers = customers.filter(
     (customer) =>
-      customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      customer.location.toLowerCase().includes(searchQuery.toLowerCase()),
+      customer.lastName.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   // Sort customers
   const sortedCustomers = [...filteredCustomers].sort((a, b) => {
     let comparison = 0
     if (sortField === "name") {
-      comparison = a.name.localeCompare(b.name)
-    } else if (sortField === "orders") {
-      comparison = a.orders - b.orders
-    } else if (sortField === "totalSpent") {
-      comparison = a.totalSpent - b.totalSpent
-    } else if (sortField === "lastOrder") {
-      comparison = new Date(a.lastOrder) - new Date(b.lastOrder)
+      comparison = a.firstName.localeCompare(b.firstName)
+    } else if (sortField === "email") {
+      comparison = a.email.localeCompare(b.email);
     }
     return sortDirection === "asc" ? comparison : -comparison
   })
@@ -201,80 +217,22 @@ function Customers() {
                   </th>
                   <th className="px-6 py-3 text-sm font-semibold uppercase tracking-wider">Contact</th>
                   <th className="px-6 py-3 text-sm font-semibold uppercase tracking-wider">Location</th>
-                  <th
-                    className="px-6 py-3 text-sm font-semibold uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort("orders")}
-                  >
-                    <div className="flex items-center">
-                      Orders
-                      {sortField === "orders" && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className={`h-4 w-4 ml-1 ${sortDirection === "desc" ? "transform rotate-180" : ""}`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                        </svg>
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-sm font-semibold uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort("totalSpent")}
-                  >
-                    <div className="flex items-center">
-                      Total Spent
-                      {sortField === "totalSpent" && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className={`h-4 w-4 ml-1 ${sortDirection === "desc" ? "transform rotate-180" : ""}`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                        </svg>
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-sm font-semibold uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort("lastOrder")}
-                  >
-                    <div className="flex items-center">
-                      Last Order
-                      {sortField === "lastOrder" && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className={`h-4 w-4 ml-1 ${sortDirection === "desc" ? "transform rotate-180" : ""}`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                        </svg>
-                      )}
-                    </div>
-                  </th>
+                  <th className="px-6 py-3 text-sm font-semibold uppercase tracking-wider">is Admin</th>
                   <th className="px-6 py-3 text-sm font-semibold uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white font-medium">
                 {sortedCustomers.map((customer) => (
-                  <tr key={customer.id}>
+                  <tr key={customer._id}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium">{customer.name}</div>
+                      <div className="font-medium">{customer.firstName} {customer.lastName}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>{customer.email}</div>
                       <div className="text-sm text-gray-500">{customer.phone}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{customer.location}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{customer.orders}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{formatPrice(customer.totalSpent)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{customer.lastOrder}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{customer.shipping?.city || "N/A"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{customer.isAdmin ? "Yes" : "No"}</td>
                     <td className=" flex items-center justify-center px-6 py-4 ">
                       <button
                         onClick={() => viewCustomerDetails(customer)}
@@ -320,12 +278,12 @@ function Customers() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <h3 className="text-md font-semibold mb-2">Customer Information</h3>
-                <p className="text-gray-600">{selectedCustomer.name}</p>
+                <p className="text-gray-600">{selectedCustomer.firstName} {selectedCustomer.lastName}</p>
                 <p className="text-gray-600">{selectedCustomer.email}</p>
                 <p className="text-gray-600">{selectedCustomer.phone}</p>
-                <p className="text-gray-600">{selectedCustomer.location}</p>
+                <p className="text-gray-600">{selectedCustomer.shipping?.city || "N/A"}</p>
               </div>
-              <div>
+              {/* <div>
                 <h3 className="text-md font-semibold mb-2">Order Statistics</h3>
                 <p className="text-gray-600">Total Orders: {selectedCustomer.orders}</p>
                 <p className="text-gray-600">Total Spent: {formatPrice(selectedCustomer.totalSpent)}</p>
@@ -333,7 +291,7 @@ function Customers() {
                 <p className="text-gray-600">
                   Average Order Value: {formatPrice(Math.round(selectedCustomer.totalSpent / selectedCustomer.orders))}
                 </p>
-              </div>
+              </div> */}
             </div>
 
             <div className="flex justify-end">

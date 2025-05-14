@@ -21,7 +21,8 @@ function Login({ setUser }) {
 
     try {
       const response = await loginUser(formData); // Appel à l'API
-      toast.success("Connexion réussie !");
+      toast.success("Connexion réussie !");  
+          
       setUser(response.data); // Mettre à jour l'utilisateur connecté
       navigate("/"); // Rediriger vers la page d'accueil
     } catch (error) {
@@ -33,8 +34,8 @@ function Login({ setUser }) {
   };
 
   return (
-    <div className="container-custom py-16">
-      <h1 className="text-2xl font-semibold mb-6">Se connecter</h1>
+    <div className="container-custom h-screen bg-[#F0E4CF] py-16">
+      <h1 className="text-2xl font-semibold text-center mb-6">Se connecter</h1>
       <form onSubmit={handleSubmit} className="max-w-md mx-auto">
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium mb-2">

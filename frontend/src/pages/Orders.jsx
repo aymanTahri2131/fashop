@@ -41,28 +41,37 @@ function Orders({ user }) {
       {Array.isArray(orders) && orders.length === 0 ? (
         <p className="text-lg text-center">You have no orders yet. Start shopping now!</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200">
+        <div className="overflow-x-auto rounded-lg shadow-md">
+          <table className="min-w-full bg-white border border-gray-200 ">
             <thead>
-              <tr className="bg-[#bc6c39] text-white">
-                <th className="px-4 py-2 text-left">Order ID</th>
+              <tr className="bg-[#F0E4CF] rounded-t-lg">
+                <th className="px-4 py-2 text-left">Order Items</th>
                 <th className="px-4 py-2 text-left">Date</th>
                 <th className="px-4 py-2 text-left">Total</th>
                 <th className="px-4 py-2 text-left">Status</th>
-                <th className="px-4 py-2 text-left">Actions</th>
+                <th className="px-4 py-2 text-left">Shipped at</th>
               </tr>
             </thead>
             <tbody>
               {orders.map((order) => (
                 <tr key={order._id} className="border-t border-gray-200">
-                  <td className="px-4 py-2">{order._id}</td>
+                  <td className="px-4 py-2">
+                    {order.items.map((item) => (
+                      <div key={item._id} className="flex items-center justify-between pr-4">
+
+                        <div className="flex items-center">
+                          <p className="text-sm font-semibold mr-2">{item.quantity} x</p>
+                          <p className="text-sm font-semibold mr-2">{item.name}</p>
+                        </div>
+                        <p className="text-sm text-gray-500">{item.price * item.quantity} MAD</p>
+                      </div>
+                    ))}
+                  </td>
                   <td className="px-4 py-2">{new Date(order.date).toLocaleDateString()}</td>
                   <td className="px-4 py-2">{order.total} MAD</td>
                   <td className="px-4 py-2 capitalize">{order.status}</td>
                   <td className="px-4 py-2">
-                    <button className="text-[#bc6c39] hover:underline">
-                      View Details
-                    </button>
+                    {order.status === "shipped" ? new Date(order.updatedAt).toLocaleDateString() : "N/A"}
                   </td>
                 </tr>
               ))}

@@ -62,9 +62,14 @@ function App() {
   })
 
   const [language, setLanguage] = useState("fr")
+  const [currency, setCurrency] = useState("mad")
+  const [isEuro, setIsEuro] = useState(false)
+  const [priceRange, setPriceRange] = useState([0, currency === "mad" ? 2000 : 200]);
 
   useEffect(() => {
     if (user) {
+      console.log("User data:", user); 
+      
       const encryptedUser = encryptData(user); // Chiffrer les données utilisateur
       localStorage.setItem("user", encryptedUser); // Stocker les données chiffrées
     } else {
@@ -102,8 +107,10 @@ function App() {
           id: product._id,
           name: product.name,
           categoryId: product.categoryId?.[language],
+          currency: currency,
+          isEuro: isEuro,
           image: product.images[0],
-          price: product.price.mad,
+          price: product.price?.[currency],
           quantity: qtt,
         },
       ]
@@ -124,9 +131,13 @@ function App() {
 
   const clearCart = () => setCart([])
 
-  const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "fr" ? "en" : "fr"))
-  }
+  const toggleLanguage = (lang) => {
+    setLanguage(lang); // Définit directement la langue choisie
+  };
+  
+  const toggleCurrency = (curr) => {
+    setCurrency(curr); // Définit directement la devise choisie
+  };
 
   return (
     <div className="flex flex-col min-h-screen overflow-y-hidden ">
@@ -134,7 +145,11 @@ function App() {
         <Header
           cartItemsCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
           language={language}
+          currency={currency}
+          toggleCurrency={toggleCurrency}
           toggleLanguage={toggleLanguage}
+          setPriceRange={setPriceRange}
+          setIsEuro={setIsEuro}
           user={user}
           logout={logout}
         />
@@ -143,13 +158,13 @@ function App() {
         <ScrollToTop />
         <Routes>
           {/* ✅ Public Routes */}
-          <Route path="/" element={<Home language={language} />} />
+          <Route path="/" element={<Home language={language} currency={currency} isEuro={isEuro} />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile user={user} />} />
+          <Route path="/profile" element={<Profile user={user} setUser={setUser}/>} />
           <Route path="/orders" element={<Orders user={user} />} />
-          <Route path="/shop" element={<Shop language={language} addToCart={addToCart} />} />
-          <Route path="/shop/:id" element={<ProductDetail language={language} addToCart={addToCart} />} />
+          <Route path="/shop" element={<Shop language={language} currency={currency} addToCart={addToCart} priceRange={priceRange} setPriceRange={setPriceRange} isEuro={isEuro} />} />
+          <Route path="/shop/:id" element={<ProductDetail language={language} currency={currency} addToCart={addToCart} />} />
           <Route path="/about" element={<About language={language} />} />
           <Route path="/custom-orders" element={<CustomOrders language={language} />} />
           <Route path="/cart" element={
@@ -158,9 +173,11 @@ function App() {
               updateQuantity={updateQuantity}
               removeFromCart={removeFromCart}
               language={language}
+              currency={currency}
+              isEuro={isEuro}
             />
           } />
-          <Route path="/checkout" element={<Checkout cart={cart} clearCart={clearCart} language={language} user={user} />} />
+          <Route path="/checkout" element={<Checkout cart={cart} clearCart={clearCart} language={language} currency={currency} user={user} isEuro={isEuro} />} />
           <Route path="/contact" element={<Contact language={language} />} />
           {/* <Route path="/blog" element={<Blog language={language} />} /> */}
 

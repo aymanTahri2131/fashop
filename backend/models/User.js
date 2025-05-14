@@ -9,10 +9,10 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
     lastName: {
-        type: String,
-        required: true,
-        trim: true,
-      },
+      type: String,
+      required: true,
+      trim: true,
+    },
     email: {
       type: String,
       required: true,
@@ -21,10 +21,10 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
     },
     phone: {
-        type: String,
-        required: true,
-        minlength: 6,
-      },
+      type: String,
+      required: true,
+      minlength: 6,
+    },
     password: {
       type: String,
       required: true,
@@ -33,6 +33,12 @@ const userSchema = new mongoose.Schema(
     isAdmin: {
       type: Boolean,
       default: false,
+    },
+    shipping: {
+      address: { type: String, trim: true },
+      city: { type: String, trim: true },
+      postalCode: { type: String, trim: true },
+      country: { type: String, trim: true },
     },
   },
   { timestamps: true }

@@ -35,8 +35,8 @@ function Register() {
   };
 
   return (
-    <div className="container-custom py-16">
-      <h1 className="text-2xl font-semibold mb-6">Créer un compte</h1>
+    <div className="container-custom bg-[#F0E4CF] h-screen py-16">
+      <h1 className="text-2xl font-semibold text-center mb-6">Créer un compte</h1>
       <form onSubmit={handleSubmit} className="max-w-md mx-auto">
         <div className="mb-4">
           <label htmlFor="firstName" className="block text-sm font-medium mb-2">

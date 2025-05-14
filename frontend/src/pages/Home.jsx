@@ -77,7 +77,7 @@ const carouselItems = [
   },
 ];
 
-function Home({ language }) {
+function Home({ language, currency, isEuro }) {
   const [newArrivals, setNewArrivals] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
 
@@ -85,7 +85,11 @@ function Home({ language }) {
 
   // Format price
   const formatPrice = (price) => {
-    return `${price} MAD`
+    if (isEuro) {
+      return `${price} ${currency === "mad" ? "MAD" : "€"}`;
+    } else {
+      return `${price} ${currency === "mad" ? "MAD" : "$"}`;
+    }
   }
 
   useEffect(() => {
@@ -231,7 +235,7 @@ function Home({ language }) {
                   </div>
                   <div className="p-4">
                     <h4 className="text-lg  mb-2 text-black text-center sm:text-center md:text-left">{product.name[language]}</h4>
-                    <p className="font-medium text-black text-center sm:text-center md:text-left">{formatPrice(product.price.mad)}</p>
+                    <p className="font-medium text-black text-center sm:text-center md:text-left">{formatPrice(product.price?.[currency])}</p>
                   </div>
                 </Link>
               ))}
@@ -272,7 +276,7 @@ function Home({ language }) {
                       {product.name[language]}
                     </h4>
                     <p className="font-medium text-black text-center sm:text-center md:text-left">
-                      {formatPrice(product.price.mad)}
+                      {formatPrice(product.price?.[currency])}
                     </p>
                   </div>
                 </Link>

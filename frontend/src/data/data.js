@@ -17,6 +17,8 @@ export const translations = {
       priceDesc: "Prix décroissant",
       addToCart: "Ajouter au panier",
       added: "Ajouté au panier !",
+      more: "Voir",
+      add: "Ajouter",
     },
     en: {
       title: "Shop",
@@ -36,6 +38,8 @@ export const translations = {
       priceDesc: "Price: High to Low",
       addToCart: "Add to Cart",
       added: "Added to cart!",
+      more: "Details",
+      add: "Add",
     },
   };
   

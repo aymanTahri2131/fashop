@@ -39,7 +39,7 @@ export const getOrdersByUser = async (req, res) => {
 // Create a new order
 export const createOrder = async (req, res) => {
   try {
-    const { userId, customer, email, total, items, shipping, payment } = req.body;
+    const { userId, customer, email, total, currency, isEuro, items, shipping, payment } = req.body;
 
     console.log("Items received:", items);
 
@@ -48,6 +48,8 @@ export const createOrder = async (req, res) => {
       customer,
       email,
       total,
+      currency,
+      isEuro,
       items,
       shipping,
       payment,

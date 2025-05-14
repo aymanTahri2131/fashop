@@ -7,6 +7,8 @@ const orderSchema = new mongoose.Schema(
     email: { type: String, required: true },
     date: { type: Date, default: Date.now },
     total: { type: Number, required: true },
+    currency: { type: String},
+    isEuro: { type: Boolean},
     status: {
       type: String,
       enum: ["processing", "shipped", "completed", "cancelled"],

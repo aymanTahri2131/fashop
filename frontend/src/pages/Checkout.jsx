@@ -71,7 +71,7 @@ const translations = {
   },
 }
 
-function Checkout({ cart, clearCart, language, user }) {
+function Checkout({ cart, clearCart, language, user, currency, isEuro }) {
   const t = translations[language]
   const navigate = useNavigate()
   const [subtotal, setSubtotal] = useState(0)
@@ -84,9 +84,9 @@ function Checkout({ cart, clearCart, language, user }) {
     lastName: user?.lastName || "",
     email: user?.email || "",
     phone: user?.phone || "",
-    address: user?.address || "",
-    city: user?.city || "",
-    postalCode: user?.postalCode || "",
+    address: user?.shipping.address || "",
+    city: user?.shipping.city || "",
+    postalCode: user?.shipping.postalCode || "",
     country: user?.country || "Morocco",
     cardNumber: "",
     cardHolder: "",
@@ -102,9 +102,9 @@ function Checkout({ cart, clearCart, language, user }) {
         lastName: user.lastName || "",
         email: user.email || "",
         phone: user.phone || "",
-        address: user.address || "",
-        city: user.city || "",
-        postalCode: user.postalCode || "",
+        address: user.shipping.address || "",
+        city: user.shipping.city || "",
+        postalCode: user.shipping.postalCode || "",
         country: user.country || "Morocco",
       }));
     }
@@ -126,7 +126,11 @@ function Checkout({ cart, clearCart, language, user }) {
 
   // Format price
   const formatPrice = (price) => {
-    return `${price} MAD`
+    if (isEuro) {
+      return `${price} ${currency === "mad" ? "MAD" : "€"}`;
+    } else {
+      return `${price} ${currency === "mad" ? "MAD" : "$"}`;
+    }
   }
 
   // Handle form input changes
@@ -150,6 +154,8 @@ function Checkout({ cart, clearCart, language, user }) {
       customer: `${formData.firstName} ${formData.lastName}`,
       email: formData.email,
       phone: formData.phone,
+      currency: cart[0]?.currency || "MAD",
+      isEuro: cart[0]?.isEuro || false,
       shipping: {
         address: formData.address,
         city: formData.city,

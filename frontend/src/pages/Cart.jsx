@@ -36,27 +36,45 @@ const translations = {
   },
 }
 
-function Cart({ cart, updateQuantity, removeFromCart, language }) {
+function Cart({ cart, updateQuantity, removeFromCart, language, currency, isEuro }) {
   const [subtotal, setSubtotal] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
   const t = translations[language]
 
   // Calculate subtotal
   useEffect(() => {
+    console.log(cart);
+    
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
     setSubtotal(total);
-    if (total > 1000) {
-      setShippingCost(0);
-    } else if (total > 0) {
-      setShippingCost(30);
+    if (currency === "mad") {
+      if (total > 1000) {
+        setShippingCost(0);
+      } else if (total > 0) {
+        setShippingCost(30);
+      } else {
+        setShippingCost(0);
+      }
+      
     } else {
-      setShippingCost(0);
+      if (total > 500) {
+        setShippingCost(0);
+      } else if (total > 0) {
+        setShippingCost(20);
+      } else {
+        setShippingCost(0);
+      }
     }
-  }, [cart])
+    
+  }, [cart, currency])
 
   // Format price
   const formatPrice = (price) => {
-    return `${price} MAD`
+    if (isEuro) {
+      return `${price} ${currency === "mad" ? "MAD" : "€"}`;
+    } else {
+      return `${price} ${currency === "mad" ? "MAD" : "$"}`;
+    }
   }
 
   // Handle quantity change
