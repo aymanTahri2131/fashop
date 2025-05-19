@@ -77,7 +77,7 @@ const carouselItems = [
   },
 ];
 
-function Home({ language, currency, isEuro }) {
+function Home({ language, currency, isEuro, isGbp }) {
   const [newArrivals, setNewArrivals] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
 
@@ -86,9 +86,11 @@ function Home({ language, currency, isEuro }) {
   // Format price
   const formatPrice = (price) => {
     if (isEuro) {
-      return `${price} ${currency === "mad" ? "MAD" : "€"}`;
+      return `${price} €`;
+    } else if (isGbp) {
+      return `${price} £`;
     } else {
-      return `${price} ${currency === "mad" ? "MAD" : "$"}`;
+      return `${price} ${currency === "usd" ? "$" : "MAD"}`;
     }
   }
 
@@ -235,7 +237,11 @@ function Home({ language, currency, isEuro }) {
                   </div>
                   <div className="p-4">
                     <h4 className="text-lg  mb-2 text-black text-center sm:text-center md:text-left">{product.name[language]}</h4>
-                    <p className="font-medium text-black text-center sm:text-center md:text-left">{formatPrice(product.price?.[currency])}</p>
+                    {currency !== "mad" ? (
+                      <p className="font-medium text-black text-center sm:text-center md:text-left">{formatPrice(product.price.usd)}</p>
+                    ) : (
+                      <p className="font-medium text-black text-center sm:text-center md:text-left">{formatPrice(product.price.mad)}</p>
+                    )}
                   </div>
                 </Link>
               ))}
@@ -275,9 +281,16 @@ function Home({ language, currency, isEuro }) {
                     <h4 className="font-semibold text-lg mb-2 text-center sm:text-center md:text-left">
                       {product.name[language]}
                     </h4>
-                    <p className="font-medium text-black text-center sm:text-center md:text-left">
-                      {formatPrice(product.price?.[currency])}
-                    </p>
+                    {currency !== "mad" ? (
+                      <p className="font-medium text-black text-center sm:text-center md:text-left">
+                        {formatPrice(product.price.usd)}
+                      </p>
+                    ) : (
+                      <p className="font-medium text-black text-center sm:text-center md:text-left">
+                        {formatPrice(product.price.mad)}
+                      </p>
+                    )}
+
                   </div>
                 </Link>
               ))}

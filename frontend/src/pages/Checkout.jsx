@@ -71,7 +71,7 @@ const translations = {
   },
 }
 
-function Checkout({ cart, clearCart, language, user, currency, isEuro }) {
+function Checkout({ cart, clearCart, language, user, currency, isEuro, isGbp }) {
   const t = translations[language]
   const navigate = useNavigate()
   const [subtotal, setSubtotal] = useState(0)
@@ -127,9 +127,11 @@ function Checkout({ cart, clearCart, language, user, currency, isEuro }) {
   // Format price
   const formatPrice = (price) => {
     if (isEuro) {
-      return `${price} ${currency === "mad" ? "MAD" : "€"}`;
+      return `${price} €`;
+    } else if (isGbp) {
+      return `${price} £`;
     } else {
-      return `${price} ${currency === "mad" ? "MAD" : "$"}`;
+      return `${price} ${currency === "usd" ? "$" : "MAD"}`;
     }
   }
 

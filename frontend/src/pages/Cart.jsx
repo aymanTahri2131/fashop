@@ -36,7 +36,7 @@ const translations = {
   },
 }
 
-function Cart({ cart, updateQuantity, removeFromCart, language, currency, isEuro }) {
+function Cart({ cart, updateQuantity, removeFromCart, language, currency, isEuro, isGbp }) {
   const [subtotal, setSubtotal] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
   const t = translations[language]
@@ -44,7 +44,7 @@ function Cart({ cart, updateQuantity, removeFromCart, language, currency, isEuro
   // Calculate subtotal
   useEffect(() => {
     console.log(cart);
-    
+
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
     setSubtotal(total);
     if (currency === "mad") {
@@ -55,7 +55,7 @@ function Cart({ cart, updateQuantity, removeFromCart, language, currency, isEuro
       } else {
         setShippingCost(0);
       }
-      
+
     } else {
       if (total > 500) {
         setShippingCost(0);
@@ -65,15 +65,17 @@ function Cart({ cart, updateQuantity, removeFromCart, language, currency, isEuro
         setShippingCost(0);
       }
     }
-    
+
   }, [cart, currency])
 
   // Format price
   const formatPrice = (price) => {
     if (isEuro) {
-      return `${price} ${currency === "mad" ? "MAD" : "€"}`;
+      return `${price} €`;
+    } else if (isGbp) {
+      return `${price} £`;
     } else {
-      return `${price} ${currency === "mad" ? "MAD" : "$"}`;
+      return `${price} ${currency === "usd" ? "$" : "MAD"}`;
     }
   }
 

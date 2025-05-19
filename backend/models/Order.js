@@ -9,6 +9,7 @@ const orderSchema = new mongoose.Schema(
     total: { type: Number, required: true },
     currency: { type: String},
     isEuro: { type: Boolean},
+    isGbp: { type: Boolean},
     status: {
       type: String,
       enum: ["processing", "shipped", "completed", "cancelled"],
@@ -19,7 +20,7 @@ const orderSchema = new mongoose.Schema(
         name: { type: String, required: true },
         price: { type: Number, required: true },
         quantity: { type: Number, required: true },
-        Image: { type: String},
+        image: { type: String},
       },
     ],
     shipping: {

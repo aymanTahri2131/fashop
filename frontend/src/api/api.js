@@ -1,7 +1,8 @@
 import axios from "axios"
 import { decryptData } from "../encryptData"
 
-const API_BASE_URL = "http://localhost:4000/api"
+// const API_BASE_URL = "http://localhost:4000/api"
+const API_BASE_URL = "https://fashop.up.railway.app/api"
 
 // ✅ Axios instance
 const api = axios.create({
@@ -10,6 +11,14 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 })
+
+//----------------- Settings ----------------------
+
+// 🔄 GET : Récupérer les paramètres
+export const fetchSettings = () => api.get("/settings");
+
+// 📝 PUT : Mettre à jour les paramètres
+export const updateSettings = (settings) => api.put("/settings", settings);
 
 
 /* -------------------- AUTH -------------------- */
@@ -103,6 +112,30 @@ export const updateOrderStatus = (id, status) =>
 
 // ✅ POST : Créer une commande
 export const createOrder = (orderData) => api.post("/orders", orderData);
+
+/* -------------------- TÉMOIGNAGES -------------------- */
+
+// 🔄 GET : Récupérer tous les témoignages
+export const fetchTestimonials = () => api.get("/testimonials");
+
+// ✅ POST : Créer un témoignage
+export const addTestimonial = (testimonialData) =>
+  api.post("/testimonials", testimonialData);
+
+// 🔄 GET : Récupérer les témoignages par productId
+export const fetchTestimonialsByProductId = (productId) =>
+  api.get(`/testimonials/product/${productId}`);
+
+// 📝 PUT : Mettre à jour un témoignage
+export const updateTestimonial = (id, updatedData) =>
+  api.put(`/testimonials/${id}`, updatedData);
+
+// ❌ DELETE : Supprimer un témoignage
+export const deleteTestimonial = (id) => api.delete(`/testimonials/${id}`);
+
+// 📝 PATCH : Approuver ou désapprouver un témoignage
+export const toggleApprovalStatus = (id) =>
+  api.patch(`/testimonials/${id}/toggle-approval`);
 
 
 export default api

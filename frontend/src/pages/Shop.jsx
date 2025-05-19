@@ -8,7 +8,7 @@ import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { translations, categoryOptions } from "../data/data";
 
-function Shop({ language, currency, addToCart, priceRange, setPriceRange, isEuro }) {
+function Shop({ language, currency, addToCart, priceRange, setPriceRange, isEuro, isGbp }) {
   const t = translations[language];
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -57,19 +57,27 @@ function Shop({ language, currency, addToCart, priceRange, setPriceRange, isEuro
     }
 
     // Filter by price range
-    filtered = filtered.filter(
-      (product) =>
-        product.price?.[currency] >= priceRange[0] &&
-        product.price?.[currency] <= priceRange[1]
-    );
+    filtered = filtered.filter((product) => {
+      if (currency !== "mad") {
+        return (
+          product.price?.usd >= priceRange[0] &&
+          product.price?.usd <= priceRange[1]
+        );
+      } else {
+        return (
+          product.price?.mad >= priceRange[0] &&
+          product.price?.mad <= priceRange[1]
+        );
+      }
+    });
 
     // Sort products
     switch (sortOption) {
       case "priceAsc":
-        filtered.sort((a, b) => a.price?.[currency] - b.price?.[currency]);
+        {currency !== "mad" ? filtered.sort((a, b) => a.price?.usd - b.price?.usd) : filtered.sort((a, b) => a.price?.mad - b.price?.mad)}
         break;
       case "priceDesc":
-        filtered.sort((a, b) => b.price?.[currency] - a.price?.[currency]);
+        {currency !== "mad" ? filtered.sort((a, b) => b.price?.usd - a.price?.usd) : filtered.sort((a, b) => b.price?.mad - a.price?.mad)}
         break;
       case "newest":
       default:
@@ -83,9 +91,11 @@ function Shop({ language, currency, addToCart, priceRange, setPriceRange, isEuro
   // Format price
   const formatPrice = (price) => {
     if (isEuro) {
-      return `${price} ${currency === "mad" ? "MAD" : "€"}`;
+      return `${price} €`;
+    } else if (isGbp) {
+      return `${price} £`;
     } else {
-      return `${price} ${currency === "mad" ? "MAD" : "$"}`;
+      return `${price} ${currency === "usd" ? "$" : "MAD"}`;
     }
   };
 
@@ -153,11 +163,15 @@ function Shop({ language, currency, addToCart, priceRange, setPriceRange, isEuro
                 <h3 className="text-lg font-semibold mb-4">{t.price}</h3>
                 {isEuro ? (
                   <p className="mb-2">
-                    {t.priceRange}: {priceRange[0]} - {priceRange[1]} {currency === "mad" ? "MAD" : "€"}
+                    {t.priceRange}: {priceRange[0]} - {priceRange[1]} €
+                  </p>
+                ) : isGbp ? (
+                  <p className="mb-2">
+                    {t.priceRange}: {priceRange[0]} - {priceRange[1]} £
                   </p>
                 ) : (
                   <p className="mb-2">
-                    {t.priceRange}: {priceRange[0]} - {priceRange[1]} {currency === "mad" ? "MAD" : "$"}
+                    {t.priceRange}: {priceRange[0]} - {priceRange[1]} {currency === "usd" ? "$" : "MAD"}
                   </p>
                 )}
                 <input
@@ -221,7 +235,11 @@ function Shop({ language, currency, addToCart, priceRange, setPriceRange, isEuro
                     </div>
                     <div className="p-4 text-center sm:text-center md:text-left">
                       <h4 className="font-semibold text-lg mb-2">{product.name[language]}</h4>
-                      <p className="font-medium">{formatPrice(product.price[currency])}</p>
+                      {currency != "mad" ? (
+                        <p className="font-medium">{formatPrice(product.price.usd)}</p>
+                      ) : (
+                        <p className="font-medium">{formatPrice(product.price.mad)}</p>
+                      )}
                     </div>
                   </Link>
                   <div className="px-4 pb-4">

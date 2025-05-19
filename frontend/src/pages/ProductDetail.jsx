@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import { toast } from "react-toastify"
-import { fetchProductById } from "../api/api"
+import { fetchProductById, addTestimonial, fetchTestimonialsByProductId } from "../api/api"
 import { FaArrowLeftLong } from "react-icons/fa6";
 
 // Translation object
@@ -30,35 +30,19 @@ const translations = {
   },
 }
 
-// Mock data for products (same as in Shop.jsx)
-const allProducts = [
-  {
-    id: 1,
-    name: { fr: "Vase Terracotta", en: "Terracotta Vase" },
-    price: 450,
-    image: "/placeholder.svg?height=300&width=300",
-    category: { fr: "Vases", en: "Vases" },
-    categoryKey: "vases",
-    description: {
-      fr: "Vase en argile fait à la main avec des motifs naturels.",
-      en: "Handmade clay vase with natural patterns.",
-    },
-    isNew: true,
-    images: [
-      "/placeholder.svg?height=600&width=600",
-      "/placeholder.svg?height=600&width=600",
-      "/placeholder.svg?height=600&width=600",
-    ],
-  },
-  // ... other products (same as in Shop.jsx)
-]
-
-function ProductDetail({ language, addToCart }) {
+function ProductDetail({ language, addToCart, currency, isEuro, isGbp }) {
   const { id } = useParams()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
+  const [testimonials, setTestimonials] = useState([]);
+  const [loadingTestimonials, setLoadingTestimonials] = useState(true);
   const [activeImage, setActiveImage] = useState(0)
+  const [testimonial, setTestimonial] = useState({
+    name: "",
+    rating: 5,
+    content: "",
+  });
   const t = translations[language]
 
   // Fetch product data
@@ -78,21 +62,67 @@ function ProductDetail({ language, addToCart }) {
     loadProduct();
   }, [id]);
 
+  // Fetch testimonials by productId
+  useEffect(() => {
+    const loadTestimonials = async () => {
+      try {
+        setLoadingTestimonials(true);
+        const response = await fetchTestimonialsByProductId(id); // Fetch testimonials by productId
+        console.log(response.data);
+
+        setTestimonials(response.data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des témoignages :", error);
+        toast.error("Impossible de charger les témoignages.");
+      } finally {
+        setLoadingTestimonials(false);
+      }
+    };
+
+    loadTestimonials();
+  }, [id]);
+
+  // Handle testimonial form submission
+  const handleTestimonialSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const testimonialData = { ...testimonial, productId: id };
+      await addTestimonial(testimonialData);
+      toast.success("Votre témoignage a été soumis avec succès !");
+      setTestimonial({ name: "", rating: 5, content: "" }); // Reset form
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du témoignage :", error);
+      toast.error("Impossible de soumettre le témoignage.");
+    }
+  };
+
+  // Handle testimonial input changes
+  const handleTestimonialChange = (e) => {
+    const { name, value } = e.target;
+    setTestimonial((prev) => ({ ...prev, [name]: value }));
+  };
+
   // Format price
   const formatPrice = (price) => {
-    return `${price} MAD`
+    if (isEuro) {
+      return `${price} €`;
+    } else if (isGbp) {
+      return `${price} £`;
+    } else {
+      return `${price} ${currency === "usd" ? "$" : "MAD"}`;
+    }
   }
 
   // Handle quantity change
   const handleQuantityChange = (e) => {
     const value = e.target.value;
-  
+
     // Allow empty input but prevent negative or invalid values
     if (value === "" || Number(value) > 0) {
       setQuantity(value === "" ? "" : Number(value)); // Set empty string or valid number
     }
     console.log("Quantity changed:", value);
-    
+
   };
 
   // Handle add to cart
@@ -184,7 +214,7 @@ function ProductDetail({ language, addToCart }) {
           <p className="text-accent mb-4">
             {t.category}: {product.categoryId?.[language]}
           </p>
-          <p className="text-2xl font-semibold mb-6">{formatPrice(product.price.mad)}</p>
+          <p className="text-2xl font-semibold mb-6">{formatPrice(product.price?.[currency])}</p>
 
           <div className="mb-8">
             <h3 className="text-lg font-medium mb-2">{t.description}</h3>
@@ -211,6 +241,88 @@ function ProductDetail({ language, addToCart }) {
           >
             {t.addToCart}
           </button>
+        </div>
+      </div>
+
+      {/* Testimonial Form */}
+      <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="flex flex-col w-full">
+          <h2 className="text-2xl font-semibold mb-4">Ajouter un témoignage</h2>
+          <form onSubmit={handleTestimonialSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Nom</label>
+              <input
+                type="text"
+                name="name"
+                value={testimonial.name}
+                onChange={handleTestimonialChange}
+                required
+                className="w-full p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Note</label>
+              <select
+                name="rating"
+                value={testimonial.rating}
+                onChange={handleTestimonialChange}
+                required
+                className="w-full p-2 border border-gray-300 rounded-md"
+              >
+                <option value="1">1 Étoile</option>
+                <option value="2">2 Étoiles</option>
+                <option value="3">3 Étoiles</option>
+                <option value="4">4 Étoiles</option>
+                <option value="5">5 Étoiles</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Témoignage</label>
+              <textarea
+                name="content"
+                value={testimonial.content}
+                onChange={handleTestimonialChange}
+                required
+                rows="4"
+                className="w-full p-2 border border-gray-300 rounded-md"
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-[#8f974a] text-white rounded-md hover:bg-[#bc6c39] transition-colors duration-200"
+            >
+              Soumettre
+            </button>
+          </form>
+        </div>
+
+        {/* Testimonial Display */}
+        <div className="flex flex-col items-center">
+          {product.testimonials && product.testimonials.length > 0 && (
+            <h2 className="text-2xl font-semibold mb-4">Témoignages</h2>
+          )}
+          {loadingTestimonials ? (
+            <p>Chargement des témoignages...</p>
+          ) : testimonials.length > 0 ? (
+            testimonials.map((testimonial, index) => (
+              <div key={index} className="border p-4 rounded-md mb-4 w-full">
+                <div className="flex justify-between mb-2">
+                  <p className="font-semibold">{testimonial.name}</p>
+                  <p className="text-yellow-500">{'⭐'.repeat(testimonial.rating)}</p>
+                </div>
+                <div className="flex gap-4 mb-2">
+                <p className="text-sm text-gray-500">{testimonial.date.split("T")[0]}</p>
+                  <p className="text-sm text-gray-500">a {testimonial.location}</p>
+                  
+                </div>
+
+                <p>{testimonial.content}</p>
+              </div>
+            ))
+          ) : (
+            <p>Aucun témoignage pour ce produit.</p>
+          )}
         </div>
       </div>
     </div>

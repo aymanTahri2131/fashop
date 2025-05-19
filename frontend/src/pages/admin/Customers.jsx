@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 import AdminSidebar from "../../components/admin/AdminSidebar"
 import { MdOutlineRemoveRedEye } from "react-icons/md";
-import { fetchUsers } from "../../api/api";
+import { fetchUsers, updateUser } from "../../api/api";
 import { toast } from "react-toastify"
 
 // Mock data for customers
@@ -112,7 +112,7 @@ function Customers() {
         toast.error("Failed to fetch customers. Please try again.");
       }
     };
-  
+
     fetchCustomers();
   }, []);
 
@@ -155,6 +155,30 @@ function Customers() {
     setSelectedCustomer(customer)
     setIsModalOpen(true)
   }
+
+  const handleAdminChange = async (e) => {
+    const isChecked = e.target.checked;
+
+    // Afficher un message de confirmation
+    const confirmation = window.confirm(
+      `Êtes-vous sûr de vouloir ${isChecked ? "accorder" : "révoquer"} les privilèges d'administrateur pour cet utilisateur?`
+    );
+
+    if (!confirmation) {
+      return; // Annuler l'action si l'utilisateur clique sur "Annuler"
+    }
+
+    const updatedCustomer = { ...selectedCustomer, isAdmin: isChecked };
+    setSelectedCustomer(updatedCustomer);
+
+    try {
+      await updateUser(updatedCustomer); // Appel à l'API pour sauvegarder la modification
+      toast.success("Admin status updated successfully!");
+    } catch (error) {
+      console.error("Error updating admin status:", error);
+      toast.error("Failed to update admin status. Please try again.");
+    }
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -233,7 +257,7 @@ function Customers() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{customer.shipping?.city || "N/A"}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{customer.isAdmin ? "Yes" : "No"}</td>
-                    <td className=" flex items-center justify-center px-6 py-4 ">
+                    <td className=" flex items-center px-6 py-4 ">
                       <button
                         onClick={() => viewCustomerDetails(customer)}
                         className="text-gray-600 hover:text-black transition-colors duration-300 mt-3"
@@ -283,15 +307,18 @@ function Customers() {
                 <p className="text-gray-600">{selectedCustomer.phone}</p>
                 <p className="text-gray-600">{selectedCustomer.shipping?.city || "N/A"}</p>
               </div>
-              {/* <div>
-                <h3 className="text-md font-semibold mb-2">Order Statistics</h3>
-                <p className="text-gray-600">Total Orders: {selectedCustomer.orders}</p>
-                <p className="text-gray-600">Total Spent: {formatPrice(selectedCustomer.totalSpent)}</p>
-                <p className="text-gray-600">Last Order: {selectedCustomer.lastOrder}</p>
-                <p className="text-gray-600">
-                  Average Order Value: {formatPrice(Math.round(selectedCustomer.totalSpent / selectedCustomer.orders))}
-                </p>
-              </div> */}
+              <div>
+                <h3 className="text-md font-semibold mb-2">Admin Status</h3>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedCustomer.isAdmin}
+                    onChange={handleAdminChange}
+                    className="mr-2 accent-[#8f974a]"
+                  />
+                  <span className="text-gray-600">Is Admin</span>
+                </label>
+              </div>
             </div>
 
             <div className="flex justify-end">

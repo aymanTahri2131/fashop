@@ -82,6 +82,7 @@ export const updateUserProfile = async (req, res) => {
     user.email = req.body.email || user.email;
     user.phone = req.body.phone || user.phone;
     user.shipping = req.body.shipping || user.shipping;
+    user.isAdmin = req.body.isAdmin || user.isAdmin;
 
     console.log("Updated user data:", user); // Vérifiez les données mises à jour
     

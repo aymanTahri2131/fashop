@@ -11,9 +11,8 @@ import categoryRoutes from "./routes/category.js";
 import orderRoutes from "./routes/order.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-
-
-
+import testimonialRoutes from "./routes/testimonial.js";
+import settingRoutes from "./routes/setting.js";
 
 //app config
 
@@ -56,6 +55,8 @@ app.use('/api/custom-orders', customOrdersRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use("/api/testimonials", testimonialRoutes);
+app.use("/api/settings", settingRoutes);
 
 
 

@@ -1,81 +1,58 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import AdminSidebar from "../../components/admin/AdminSidebar"
-import { toast } from "react-toastify"
+import { useState, useEffect } from "react";
+import AdminSidebar from "../../components/admin/AdminSidebar";
+import { toast } from "react-toastify";
+import { fetchSettings, updateSettings } from "../../api/api";
 
 function Settings() {
-  const [generalSettings, setGeneralSettings] = useState({
-    storeName: "FlorArt",
-    storeEmail: "contact@florart.ma",
-    storePhone: "+212 600 000 000",
-    storeAddress: "123 Rue des Artisans, Marrakech, Morocco",
-    currency: "MAD",
-    language: "fr",
-  })
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [shippingSettings, setShippingSettings] = useState({
-    enableShipping: true,
-    flatRate: 50,
-    freeShippingThreshold: 1000,
-    shippingCountries: ["Morocco", "France", "Spain", "United Kingdom", "United States"],
-  })
+  // Charger les paramètres
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetchSettings();
+        setSettings(response.data);
+      } catch (error) {
+        toast.error("Erreur lors du chargement des paramètres.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const [paymentSettings, setPaymentSettings] = useState({
-    enableCreditCard: true,
-    enablePaypal: true,
-    enableBankTransfer: true,
-    testMode: true,
-  })
+    loadSettings();
+  }, []);
 
-  const [emailSettings, setEmailSettings] = useState({
-    orderConfirmation: true,
-    orderShipped: true,
-    orderDelivered: true,
-    abandonedCart: false,
-    newsletterFrequency: "weekly",
-  })
+  // Gérer les changements dans les paramètres
+  const handleChange = (section, name, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [name]: value,
+      },
+    }));
+  };
 
-  // Handle general settings change
-  const handleGeneralChange = (e) => {
-    const { name, value } = e.target
-    setGeneralSettings({
-      ...generalSettings,
-      [name]: value,
-    })
+  // Soumettre les paramètres
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await updateSettings(settings);
+      toast.success("Paramètres mis à jour avec succès !");
+    } catch (error) {
+      toast.error("Erreur lors de la mise à jour des paramètres.");
+    }
+  };
+
+  if (loading) {
+    return <p>Chargement des paramètres...</p>;
   }
 
-  // Handle shipping settings change
-  const handleShippingChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setShippingSettings({
-      ...shippingSettings,
-      [name]: type === "checkbox" ? checked : type === "number" ? Number(value) : value,
-    })
-  }
-
-  // Handle payment settings change
-  const handlePaymentChange = (e) => {
-    const { name, checked } = e.target
-    setPaymentSettings({
-      ...paymentSettings,
-      [name]: checked,
-    })
-  }
-
-  // Handle email settings change
-  const handleEmailChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setEmailSettings({
-      ...emailSettings,
-      [name]: type === "checkbox" ? checked : value,
-    })
-  }
-
-  // Handle form submission
-  const handleSubmit = (e, section) => {
-    e.preventDefault()
-    toast.success(`${section} settings saved successfully`)
+  if (!settings) {
+    return <p>Aucun paramètre trouvé.</p>;
   }
 
   return (
@@ -83,347 +60,211 @@ function Settings() {
       <AdminSidebar />
 
       <div className="flex-1 p-4">
-        <h1 className="text-2xl font-semibold text-[#B9703E] mb-6">Settings</h1>
+        <h1 className="text-2xl font-semibold text-[#B9703E] mb-6">Paramètres</h1>
 
-        <div className="space-y-8 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-8">
+        <form className="space-y-8 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-8" onSubmit={handleSubmit}>
           {/* General Settings */}
           <div className="bg-[#F0E4CF] rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-[#B9703E] mb-4">General Settings</h2>
-            <form onSubmit={(e) => handleSubmit(e, "General")}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="block text-md font-semibold mb-1">Store Name</label>
-                  <input
-                    type="text"
-                    name="storeName"
-                    value={generalSettings.storeName}
-                    onChange={handleGeneralChange}
-                    className="w-full p-2 border text-sm font-medium border-gray-300 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-md font-semibold mb-1">Store Email</label>
-                  <input
-                    type="email"
-                    name="storeEmail"
-                    value={generalSettings.storeEmail}
-                    onChange={handleGeneralChange}
-                    className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-md font-semibold mb-1">Store Phone</label>
-                  <input
-                    type="text"
-                    name="storePhone"
-                    value={generalSettings.storePhone}
-                    onChange={handleGeneralChange}
-                    className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-md font-semibold mb-1">Store Address</label>
-                  <input
-                    type="text"
-                    name="storeAddress"
-                    value={generalSettings.storeAddress}
-                    onChange={handleGeneralChange}
-                    className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-md font-semibold mb-1">Currency</label>
-                  <select
-                    name="currency"
-                    value={generalSettings.currency}
-                    onChange={handleGeneralChange}
-                    className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
-                  >
-                    <option value="MAD">Moroccan Dirham (MAD)</option>
-                    <option value="EUR">Euro (EUR)</option>
-                    <option value="USD">US Dollar (USD)</option>
-                    <option value="GBP">British Pound (GBP)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-md font-semibold mb-1">Default Language</label>
-                  <select
-                    name="language"
-                    value={generalSettings.language}
-                    onChange={handleGeneralChange}
-                    className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
-                  >
-                    <option value="fr">French</option>
-                    <option value="en">English</option>
-                  </select>
-                </div>
+            <h2 className="text-xl font-semibold text-[#B9703E] mb-4">Paramètres Généraux</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-md font-semibold mb-1">Nom du boutique</label>
+                <input
+                  type="text"
+                  value={settings.general.storeName}
+                  onChange={(e) => handleChange("general", "storeName", e.target.value)}
+                  className="w-full p-2 border border-gray-300 text-sm font-medium rounded-md"
+                />
               </div>
-              <div className="flex justify-end">
-                <button type="submit" className="px-4 py-2 bg-[#8A9A5B] text-white rounded-md">
-                  Save
-                </button>
+              <div>
+                <label className="block text-md font-semibold mb-1">Email</label>
+                <input
+                  type="email"
+                  value={settings.general.storeEmail}
+                  onChange={(e) => handleChange("general", "storeEmail", e.target.value)}
+                  className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
+                />
               </div>
-            </form>
+              <div>
+                <label className="block text-md font-semibold mb-1">Téléphone</label>
+                <input
+                  type="text"
+                  value={settings.general.storePhone}
+                  onChange={(e) => handleChange("general", "storePhone", e.target.value)}
+                  className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-md font-semibold mb-1">Logo URL</label>
+                <input
+                  type="text"
+                  value={settings.general.storelogo}
+                  onChange={(e) => handleChange("general", "logoUrl", e.target.value)}
+                  className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Shipping Settings */}
           <div className="bg-[#F0E4CF] cust-card rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-[#B9703E] mb-4">Shipping Settings</h2>
-            <form onSubmit={(e) => handleSubmit(e, "Shipping")}>
-              <div className="mb-4">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="enableShipping"
-                    checked={shippingSettings.enableShipping}
-                    onChange={handleShippingChange}
-                    className="mr-2 accent-[#8A9A5B]"
-                  />
-                  <span>Enable Shipping</span>
-                </label>
+            <h2 className="text-xl font-semibold text-[#B9703E] mb-4">Paramètres d'Expédition</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-md font-semibold mb-1">Tarif Livraison (Maroc)</label>
+                <input
+                  type="number"
+                  value={settings.shipping.flatRateMorocco}
+                  onChange={(e) => handleChange("shipping", "flatRateMorocco", e.target.value)}
+                  className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
+                />
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="block text-md font-semibold mb-1">Flat Rate Shipping Cost (MAD)</label>
-                  <input
-                    type="number"
-                    name="flatRate"
-                    value={shippingSettings.flatRate}
-                    onChange={handleShippingChange}
-                    disabled={!shippingSettings.enableShipping}
-                    className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-md font-semibold mb-1">Free Shipping Threshold (MAD)</label>
-                  <input
-                    type="number"
-                    name="freeShippingThreshold"
-                    value={shippingSettings.freeShippingThreshold}
-                    onChange={handleShippingChange}
-                    disabled={!shippingSettings.enableShipping}
-                    className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
-                  />
-                </div>
+              <div>
+                <label className="block text-md font-semibold mb-1">Tarif Livraison (Europe)</label>
+                <input
+                  type="number"
+                  value={settings.shipping.flatRateEurop}
+                  onChange={(e) => handleChange("shipping", "flatRateEurop", e.target.value)}
+                  className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
+                />
               </div>
-
-              <div className="mb-6">
-                <label className="block text-md font-semibold mb-1">Shipping Countries</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={shippingSettings.shippingCountries.includes("Morocco")}
-                      onChange={() => {
-                        const updatedCountries = shippingSettings.shippingCountries.includes("Morocco")
-                          ? shippingSettings.shippingCountries.filter((c) => c !== "Morocco")
-                          : [...shippingSettings.shippingCountries, "Morocco"]
-                        setShippingSettings({ ...shippingSettings, shippingCountries: updatedCountries })
-                      }}
-                      disabled={!shippingSettings.enableShipping}
-                      className="mr-2 accent-[#8A9A5B]"
-                    />
-                    <span>Morocco</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={shippingSettings.shippingCountries.includes("France")}
-                      onChange={() => {
-                        const updatedCountries = shippingSettings.shippingCountries.includes("France")
-                          ? shippingSettings.shippingCountries.filter((c) => c !== "France")
-                          : [...shippingSettings.shippingCountries, "France"]
-                        setShippingSettings({ ...shippingSettings, shippingCountries: updatedCountries })
-                      }}
-                      disabled={!shippingSettings.enableShipping}
-                      className="mr-2 accent-[#8A9A5B]"
-                    />
-                    <span>France</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={shippingSettings.shippingCountries.includes("Spain")}
-                      onChange={() => {
-                        const updatedCountries = shippingSettings.shippingCountries.includes("Spain")
-                          ? shippingSettings.shippingCountries.filter((c) => c !== "Spain")
-                          : [...shippingSettings.shippingCountries, "Spain"]
-                        setShippingSettings({ ...shippingSettings, shippingCountries: updatedCountries })
-                      }}
-                      disabled={!shippingSettings.enableShipping}
-                      className="mr-2 accent-[#8A9A5B]"
-                    />
-                    <span>Spain</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={shippingSettings.shippingCountries.includes("United Kingdom")}
-                      onChange={() => {
-                        const updatedCountries = shippingSettings.shippingCountries.includes("United Kingdom")
-                          ? shippingSettings.shippingCountries.filter((c) => c !== "United Kingdom")
-                          : [...shippingSettings.shippingCountries, "United Kingdom"]
-                        setShippingSettings({ ...shippingSettings, shippingCountries: updatedCountries })
-                      }}
-                      disabled={!shippingSettings.enableShipping}
-                      className="mr-2 accent-[#8A9A5B]"
-                    />
-                    <span>United Kingdom</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={shippingSettings.shippingCountries.includes("United States")}
-                      onChange={() => {
-                        const updatedCountries = shippingSettings.shippingCountries.includes("United States")
-                          ? shippingSettings.shippingCountries.filter((c) => c !== "United States")
-                          : [...shippingSettings.shippingCountries, "United States"]
-                        setShippingSettings({ ...shippingSettings, shippingCountries: updatedCountries })
-                      }}
-                      disabled={!shippingSettings.enableShipping}
-                      className="mr-2 accent-[#8A9A5B]"
-                    />
-                    <span>United States</span>
-                  </label>
-                </div>
+              <div>
+                <label className="block text-md font-semibold mb-1">Seuil Livraison Gratuite (Maroc)</label>
+                <input
+                  type="number"
+                  value={settings.shipping.freeShippingThresholdMorocco}
+                  onChange={(e) =>
+                    handleChange("shipping", "freeShippingThresholdMorocco", e.target.value)
+                  }
+                  className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
+                />
               </div>
-
-              <div className="flex justify-end">
-                <button type="submit" className="px-4 py-2 bg-[#8A9A5B] text-white rounded-md">
-                  Save
-                </button>
+              <div>
+                <label className="block text-md font-semibold mb-1">Seuil Livraison Gratuite (Europe)</label>
+                <input
+                  type="number"
+                  value={settings.shipping.freeShippingThresholdEurop}
+                  onChange={(e) =>
+                    handleChange("shipping", "freeShippingThresholdEurop", e.target.value)
+                  }
+                  className="w-full p-2 text-sm font-medium border border-gray-300 rounded-md"
+                />
               </div>
-            </form>
+            </div>
           </div>
 
           {/* Payment Settings */}
           <div className="bg-[#F0E4CF] cust-card rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-[#B9703E] mb-4">Payment Settings</h2>
-            <form onSubmit={(e) => handleSubmit(e, "Payment")}>
-              <div className="space-y-4 mb-6">
+            <h2 className="text-xl font-semibold text-[#B9703E] mb-4">Paramètres de Paiement</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
                 <label className="flex items-center">
                   <input
                     type="checkbox"
-                    name="enableCreditCard"
-                    checked={paymentSettings.enableCreditCard}
-                    onChange={handlePaymentChange}
+                    checked={settings.payment.enableCod}
+                    onChange={(e) => handleChange("payment", "enableCod", e.target.checked)}
                     className="mr-2 accent-[#8A9A5B]"
                   />
-                  <span>Enable Credit Card Payments</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="enablePaypal"
-                    checked={paymentSettings.enablePaypal}
-                    onChange={handlePaymentChange}
-                    className="mr-2 accent-[#8A9A5B]"
-                  />
-                  <span>Enable PayPal Payments</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="enableBankTransfer"
-                    checked={paymentSettings.enableBankTransfer}
-                    onChange={handlePaymentChange}
-                    className="mr-2 accent-[#8A9A5B]"
-                  />
-                  <span>Enable Bank Transfer Payments</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="testMode"
-                    checked={paymentSettings.testMode}
-                    onChange={handlePaymentChange}
-                    className="mr-2 accent-[#8A9A5B]"
-                  />
-                  <span>Test Mode (No real payments will be processed)</span>
+                  Paiement à la Livraison (COD)
                 </label>
               </div>
-
-              <div className="flex justify-end">
-                <button type="submit" className="px-4 py-2 bg-[#8A9A5B] text-white rounded-md">
-                  Save
-                </button>
+              <div>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={settings.payment.enablePaypal}
+                    onChange={(e) => handleChange("payment", "enablePaypal", e.target.checked)}
+                    className="mr-2 accent-[#8A9A5B]"
+                  />
+                  PayPal
+                </label>
               </div>
-            </form>
+              <div>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={settings.payment.enableStripe}
+                    onChange={(e) => handleChange("payment", "enableStripe", e.target.checked)}
+                    className="mr-2 accent-[#8A9A5B]"
+                  />
+                  Stripe
+                </label>
+              </div>
+              <div>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={settings.payment.enableBankTransfer}
+                    onChange={(e) => handleChange("payment", "enableBankTransfer", e.target.checked)}
+                    className="mr-2 accent-[#8A9A5B]"
+                  />
+                  Virement Bancaire
+                </label>
+              </div>
+            </div>
           </div>
 
           {/* Email Settings */}
           <div className="bg-[#F0E4CF] cust-card rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-[#B9703E] mb-4">Email Notifications</h2>
-            <form onSubmit={(e) => handleSubmit(e, "Email")}>
-              <div className="space-y-4 mb-6">
+            <h2 className="text-xl font-semibold text-[#B9703E] mb-4">Paramètres Email</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
                 <label className="flex items-center">
                   <input
                     type="checkbox"
-                    name="orderConfirmation"
-                    checked={emailSettings.orderConfirmation}
-                    onChange={handleEmailChange}
+                    checked={settings.email.orderConfirmation}
+                    onChange={(e) => handleChange("email", "orderConfirmation", e.target.checked)}
                     className="mr-2 accent-[#8A9A5B]"
                   />
-                  <span>Send Order Confirmation Emails</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="orderShipped"
-                    checked={emailSettings.orderShipped}
-                    onChange={handleEmailChange}
-                    className="mr-2 accent-[#8A9A5B]"
-                  />
-                  <span>Send Order Shipped Emails</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="orderDelivered"
-                    checked={emailSettings.orderDelivered}
-                    onChange={handleEmailChange}
-                    className="mr-2 accent-[#8A9A5B]"
-                  />
-                  <span>Send Order Delivered Emails</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="abandonedCart"
-                    checked={emailSettings.abandonedCart}
-                    onChange={handleEmailChange}
-                    className="mr-2 accent-[#8A9A5B]"
-                  />
-                  <span>Send Abandoned Cart Reminder Emails</span>
+                  Confirmation de Commande
                 </label>
               </div>
-
-              <div className="mb-6">
-                <label className="block text-md font-semibold mb-1">Newsletter Frequency</label>
-                <select
-                  name="newsletterFrequency"
-                  value={emailSettings.newsletterFrequency}
-                  onChange={handleEmailChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                >
-                  <option value="weekly">Weekly</option>
-                  <option value="biweekly">Bi-weekly</option>
-                  <option value="monthly">Monthly</option>
-                </select>
+              <div>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={settings.email.orderShipped}
+                    onChange={(e) => handleChange("email", "orderShipped", e.target.checked)}
+                    className="mr-2 accent-[#8A9A5B]"
+                  />
+                  Commande Expédiée
+                </label>
               </div>
-
-              <div className="flex justify-end">
-                <button type="submit" className="px-4 py-2 bg-[#8A9A5B] text-white rounded-md">
-                  Save
-                </button>
+              <div>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={settings.email.orderPayed}
+                    onChange={(e) => handleChange("email", "orderPayed", e.target.checked)}
+                    className="mr-2 accent-[#8A9A5B]"
+                  />
+                  Commande Payée
+                </label>
               </div>
-            </form>
+              <div>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={settings.email.abandonedCart}
+                    onChange={(e) => handleChange("email", "abandonedCart", e.target.checked)}
+                    className="mr-2 accent-[#8A9A5B]"
+                  />
+                  Panier Abandonné
+                </label>
+              </div>
+            </div>
           </div>
-        </div>
+
+          {/* Bouton de soumission */}
+          <div className="flex justify-end">
+            <button type="submit" className="px-4 py-2 bg-[#8A9A5B] text-white rounded-md">
+              Enregistrer
+            </button>
+          </div>
+        </form>
       </div>
     </div>
-  )
+  );
 }
 
-export default Settings
+export default Settings;

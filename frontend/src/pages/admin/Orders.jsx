@@ -58,12 +58,13 @@ function Orders() {
   }
 
   // Format price
-  const formatPrice = (price, currency, isEuro) => {
+  const formatPrice = (price, currency, isEuro, isGbp) => {
     if (currency === "usd" && isEuro === true) {
       return `${price * 10.3} MAD`
+    } else if (currency === "usd" && isGbp === true) {
+      return `${price * 12.3} MAD`
     } else if (currency === "usd" && isEuro === false) {
       return `${price * 9.4} MAD`
-      
     } else {
       return `${price} MAD`
     }
@@ -149,7 +150,7 @@ function Orders() {
                       <td className="px-6 py-4 whitespace-nowrap">{order._id}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{order.customer}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{order.date}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{formatPrice(order.total, order.currency, order.isEuro)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{formatPrice(order.total, order.currency, order.isEuro, order.isGbp)}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(order.status)}`}>
                           {order.status}
@@ -239,9 +240,9 @@ function Orders() {
                     {selectedOrder.items.map((item) => (
                       <tr key={item.id}>
                         <td className="px-4 py-2 text-gray-700 text-sm">{item.name}</td>
-                        <td className="px-4 py-2 text-gray-700 text-sm">{formatPrice(item.price, selectedOrder.currency, selectedOrder.isEuro)}</td>
+                        <td className="px-4 py-2 text-gray-700 text-sm">{formatPrice(item.price, selectedOrder.currency, selectedOrder.isEuro, selectedOrder.isGbp)}</td>
                         <td className="px-4 py-2 text-gray-700 text-sm">{item.quantity}</td>
-                        <td className="px-4 py-2 text-gray-700 text-sm text-right">{formatPrice(item.price * item.quantity, selectedOrder.currency, selectedOrder.isEuro)}</td>
+                        <td className="px-4 py-2 text-gray-700 text-sm text-right">{formatPrice(item.price * item.quantity, selectedOrder.currency, selectedOrder.isEuro, selectedOrder.isGbp)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -250,7 +251,7 @@ function Orders() {
                       <td colSpan="3" className="px-4 py-2 text-right font-medium">
                         Total
                       </td>
-                      <td className="px-4 py-2 text-right font-medium">{formatPrice(selectedOrder.total, selectedOrder.currency, selectedOrder.isEuro)}</td>
+                      <td className="px-4 py-2 text-right font-medium">{formatPrice(selectedOrder.total, selectedOrder.currency, selectedOrder.isEuro, selectedOrder.isGbp)}</td>
                     </tr>
                   </tfoot>
                 </table>

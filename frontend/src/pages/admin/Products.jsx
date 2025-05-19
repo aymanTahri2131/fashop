@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { toast } from "react-toastify"
 import { fetchProducts, createProduct, updateProduct, deleteProduct, fetchCategories } from "../../api/api"
-import { categoryOptions } from '../../data/data';
 import { FaRegEdit } from "react-icons/fa";
 import { FaRegTrashCan } from "react-icons/fa6";
 
